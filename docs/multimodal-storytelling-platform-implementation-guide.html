@@ -1,0 +1,599 @@
+
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Multimodal Storytelling Platform — Implementation Guide</title>
+<style>
+  *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+  body {
+    font-family: -apple-system, "Segoe UI", system-ui, sans-serif;
+    font-size: 14px;
+    line-height: 1.6;
+    color: #1f2328;
+    background: #ffffff;
+    padding: 32px 16px 48px;
+  }
+  .container { max-width: 760px; margin: 0 auto; }
+  h1 { font-size: 22px; font-weight: 700; margin-bottom: 4px; }
+  .subtitle { color: #57606a; font-size: 13px; margin-bottom: 28px; }
+  h2 { font-size: 16px; font-weight: 700; margin: 32px 0 10px; color: #1f2328; border-bottom: 1px solid #e5e7eb; padding-bottom: 6px; }
+  h3 { font-size: 14px; font-weight: 700; margin: 18px 0 6px; color: #1f2328; }
+  p { margin-bottom: 10px; }
+  ul, ol { margin: 8px 0 12px 20px; }
+  li { margin-bottom: 4px; }
+  code {
+    background: #f7f8fa;
+    border: 1px solid #e5e7eb;
+    border-radius: 3px;
+    padding: 1px 5px;
+    font-family: "Consolas", "Menlo", monospace;
+    font-size: 12.5px;
+    color: #3b82d4;
+  }
+  pre {
+    background: #f7f8fa;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    padding: 14px 16px;
+    overflow-x: auto;
+    font-family: "Consolas", "Menlo", monospace;
+    font-size: 12.5px;
+    line-height: 1.7;
+    margin: 10px 0 16px;
+    color: #1f2328;
+  }
+  .badge {
+    display: inline-block;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 2px 8px;
+    border-radius: 12px;
+    margin-right: 6px;
+  }
+  .badge-mock   { background: #fef3c7; color: #92400e; }
+  .badge-real   { background: #d1fae5; color: #065f46; }
+  .badge-ui     { background: #ede9fe; color: #5b21b6; }
+  .badge-now    { background: #dbeafe; color: #1e40af; }
+
+  table { width: 100%; border-collapse: collapse; margin: 12px 0 20px; font-size: 13px; }
+  th { background: #f7f8fa; font-weight: 600; text-align: left; padding: 8px 12px; border: 1px solid #e5e7eb; }
+  td { padding: 7px 12px; border: 1px solid #e5e7eb; vertical-align: top; }
+  tr:nth-child(even) td { background: #fafafa; }
+
+  .callout {
+    border-left: 4px solid #3b82d4;
+    background: #f0f6ff;
+    padding: 10px 14px;
+    border-radius: 0 6px 6px 0;
+    margin: 14px 0;
+    font-size: 13px;
+  }
+  .callout.warn { border-color: #f59e0b; background: #fffbeb; }
+  .callout.ok   { border-color: #10b981; background: #f0fdf4; }
+
+  .phase {
+    border: 1px solid #e5e7eb;
+    border-radius: 8px;
+    padding: 16px 18px;
+    margin-bottom: 16px;
+  }
+  .phase-header {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+  }
+  .phase-num {
+    background: #3b82d4;
+    color: #fff;
+    font-weight: 700;
+    font-size: 12px;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+  }
+  .phase-title { font-weight: 700; font-size: 15px; }
+
+  .file-tree {
+    background: #f7f8fa;
+    border: 1px solid #e5e7eb;
+    border-radius: 6px;
+    padding: 14px 18px;
+    font-family: "Consolas", "Menlo", monospace;
+    font-size: 12.5px;
+    line-height: 1.8;
+  }
+  .new  { color: #10b981; font-weight: 600; }
+  .exist { color: #57606a; }
+  .change { color: #f59e0b; font-weight: 600; }
+
+  footer {
+    text-align: center;
+    font-size: 11px;
+    color: #57606a;
+    border-top: 1px solid #e5e7eb;
+    padding-top: 14px;
+    margin-top: 40px;
+  }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <h1>Multimodal Storytelling Platform</h1>
+  <p class="subtitle">Implementation Guide · IBM Granite + LangChain + React/Next.js</p>
+
+  
+  <h2>1. Codebase Audit</h2>
+  <p>Your current project is a well-structured <strong>mock scaffold</strong>. All pipelines return fake byte strings and no external AI SDK is wired in yet. Here is what exists and what needs to be built:</p>
+
+  <table>
+    <tr><th>File / Module</th><th>Status</th><th>What's needed</th></tr>
+    <tr>
+      <td><code>src/text/text_pipeline.py</code></td>
+      <td><span class="badge badge-mock">MOCK</span></td>
+      <td>Replace with IBM Granite via <code>ibm-watsonx-ai</code> SDK or LangChain <code>WatsonxLLM</code></td>
+    </tr>
+    <tr>
+      <td><code>src/audio/audio_pipeline.py</code></td>
+      <td><span class="badge badge-mock">MOCK</span></td>
+      <td>Wire <code>gTTS</code> or IBM Watson TTS for <code>generate_voice</code>; pydub for word editing</td>
+    </tr>
+    <tr>
+      <td><code>src/image/image_pipeline.py</code></td>
+      <td><span class="badge badge-mock">MOCK</span></td>
+      <td>Integrate Stable Diffusion (HuggingFace) or DALL·E; Pillow (Python ≤3.12) for filters</td>
+    </tr>
+    <tr>
+      <td><code>src/video/video_pipeline.py</code></td>
+      <td><span class="badge badge-mock">MOCK</span></td>
+      <td>Use MoviePy to stitch images + audio; trim/overlay already supported by MoviePy</td>
+    </tr>
+    <tr>
+      <td><code>src/orchestration/orchestrator.py</code></td>
+      <td><span class="badge badge-mock">MOCK</span></td>
+      <td>Add LangChain <code>SequentialChain</code> / LCEL pipeline; add retry and error handling</td>
+    </tr>
+    <tr>
+      <td><code>app.py</code></td>
+      <td><span class="badge badge-mock">MOCK</span></td>
+      <td>Replace hard-coded demo with a REST API (FastAPI) or Next.js API route</td>
+    </tr>
+    <tr>
+      <td><code>src/config.py</code></td>
+      <td><span class="badge badge-now">EXISTS</span></td>
+      <td>Add IBM credentials fields, model IDs, and API keys</td>
+    </tr>
+    <tr>
+      <td><code>tests/</code></td>
+      <td><span class="badge badge-mock">EMPTY</span></td>
+      <td>Write pytest unit tests for each pipeline</td>
+    </tr>
+    <tr>
+      <td>Frontend (React/Next.js)</td>
+      <td><span class="badge badge-mock">MISSING</span></td>
+      <td>Scaffold a Next.js app with input form, progress tracker, and media preview</td>
+    </tr>
+  </table>
+
+  <div class="callout warn">
+    <strong>Python 3.13 note:</strong> Pillow does not yet support Python 3.13. Use Python 3.12 or swap Pillow for a pure-HTTP image generation call (no local image manipulation). MoviePy will also behave better on Python 3.12.
+  </div>
+
+  
+  <h2>2. Target Architecture</h2>
+  <pre>User Input (Next.js UI)
+       │
+       ▼
+  FastAPI Backend  ─────────────────────────────────────────
+       │                                                    │
+       ▼                                                    ▼
+  LangChain Orchestrator                            IBM Watsonx (Granite)
+  ┌──────────────────────────────────┐               text-generation
+  │  1. TextChain  → IBM Granite LLM │◄──────────────────────┘
+  │  2. ImageChain → Stable Diffusion│
+  │  3. AudioChain → gTTS / IBM TTS  │
+  │  4. VideoChain → MoviePy          │
+  └──────────────────────────────────┘
+       │
+       ▼
+  outputs/ (story.txt, story.png, story.mp3, story.mp4)
+       │
+       ▼
+  Next.js UI displays results + allows editing</pre>
+
+  
+  <h2>3. Implementation Phases</h2>
+
+  <div class="phase">
+    <div class="phase-header">
+      <div class="phase-num">1</div>
+      <div class="phase-title">Wire IBM Granite into the Text Pipeline</div>
+      <span class="badge badge-real">REAL AI</span>
+    </div>
+    <p>Install the Watson AI SDK and replace the mock <code>generate_text</code> function.</p>
+    <h3>Install</h3>
+    <pre>pip install ibm-watsonx-ai langchain-ibm python-dotenv</pre>
+    <h3>Add to <code>src/config.py</code></h3>
+    <pre>import os
+from dotenv import load_dotenv
+load_dotenv()
+
+IBM_API_KEY      = os.getenv("IBM_API_KEY")
+IBM_PROJECT_ID   = os.getenv("IBM_PROJECT_ID")
+IBM_URL          = os.getenv("IBM_URL", "https://us-south.ml.cloud.ibm.com")
+GRANITE_MODEL_ID = "ibm/granite-13b-instruct-v2"</pre>
+    <h3>Replace <code>src/text/text_pipeline.py</code></h3>
+    <pre>from langchain_ibm import WatsonxLLM
+from src import config
+
+def _get_llm():
+    return WatsonxLLM(
+        model_id=config.GRANITE_MODEL_ID,
+        url=config.IBM_URL,
+        apikey=config.IBM_API_KEY,
+        project_id=config.IBM_PROJECT_ID,
+        params={"max_new_tokens": 500, "temperature": 0.8},
+    )
+
+def generate_text(prompt: str, max_tokens: int = 500) -&gt; str:
+    llm = _get_llm()
+    full_prompt = (
+        f"You are a creative storyteller. Write a vivid, engaging short story "
+        f"based on this idea:\n\n{prompt}\n\nStory:"
+    )
+    return llm.invoke(full_prompt)</pre>
+    <h3>Create a <code>.env</code> file (never commit this)</h3>
+    <pre>IBM_API_KEY=your_ibm_api_key_here
+IBM_PROJECT_ID=your_project_id_here
+IBM_URL=https://us-south.ml.cloud.ibm.com</pre>
+    <div class="callout ok">Get your API key and project ID from <strong>IBM watsonx.ai → Settings → Credentials</strong>.</div>
+  </div>
+
+  <div class="phase">
+    <div class="phase-header">
+      <div class="phase-num">2</div>
+      <div class="phase-title">Add LangChain Orchestration (LCEL Pipeline)</div>
+      <span class="badge badge-real">REAL AI</span>
+    </div>
+    <p>Replace the thin <code>orchestrator.py</code> with a proper LangChain LCEL chain so each step feeds the next automatically.</p>
+    <h3>Replace <code>src/orchestration/orchestrator.py</code></h3>
+    <pre>from langchain_core.prompts import PromptTemplate
+from langchain_core.output_parsers import StrOutputParser
+from langchain_ibm import WatsonxLLM
+from src.audio.audio_pipeline import generate_voice
+from src.image.image_pipeline import generate_image
+from src.video.video_pipeline import generate_video
+from src import config
+
+def _llm():
+    return WatsonxLLM(
+        model_id=config.GRANITE_MODEL_ID,
+        url=config.IBM_URL,
+        apikey=config.IBM_API_KEY,
+        project_id=config.IBM_PROJECT_ID,
+        params={"max_new_tokens": 500, "temperature": 0.8},
+    )
+
+story_prompt = PromptTemplate.from_template(
+    "Write a vivid short story from this idea:\n\n{idea}\n\nStory:"
+)
+image_prompt_chain = PromptTemplate.from_template(
+    "Summarise this story as a single visual scene description "
+    "suitable for an image generator (max 30 words):\n\n{story}"
+)
+
+def run_full_pipeline(story_idea: str) -&gt; dict:
+    llm = _llm()
+    parser = StrOutputParser()
+
+    # 1. Generate story text
+    story_text = (story_prompt | llm | parser).invoke({"idea": story_idea})
+
+    # 2. Generate image prompt from story
+    image_desc = (image_prompt_chain | llm | parser).invoke({"story": story_text})
+
+    # 3. Generate outputs
+    audio_bytes = generate_voice(story_text)
+    image_bytes = generate_image(image_desc)
+    video_bytes = generate_video(image_desc)
+
+    return {
+        "story_text":  story_text,
+        "image_desc":  image_desc,
+        "audio_bytes": audio_bytes,
+        "image_bytes": image_bytes,
+        "video_bytes": video_bytes,
+    }</pre>
+  </div>
+
+  <div class="phase">
+    <div class="phase-header">
+      <div class="phase-num">3</div>
+      <div class="phase-title">Wire Real Audio — gTTS (free) or IBM Watson TTS</div>
+      <span class="badge badge-real">REAL AI</span>
+    </div>
+    <h3>Install gTTS (simplest option)</h3>
+    <pre>pip install gTTS</pre>
+    <h3>Replace <code>src/audio/audio_pipeline.py</code></h3>
+    <pre>import io
+from gtts import gTTS
+
+def generate_voice(text: str, voice="en", tone="neutral") -&gt; bytes:
+    """Convert text to MP3 bytes using gTTS."""
+    tts = gTTS(text=text, lang=voice, slow=(tone == "slow"))
+    buf = io.BytesIO()
+    tts.write_to_fp(buf)
+    return buf.getvalue()
+
+def delete_word(audio_bytes: bytes, word: str) -&gt; bytes:
+    # Real impl: use pydub forced-alignment; for now return unchanged
+    return audio_bytes
+
+def add_word(audio_bytes: bytes, word: str, tone="neutral") -&gt; bytes:
+    # Real impl: synthesise word separately and concatenate with pydub
+    return audio_bytes</pre>
+    <div class="callout">For IBM Watson TTS: <code>pip install ibm-watson</code> and use <code>TextToSpeechV1</code> with your IAM key — swap it in here without changing any other file.</div>
+  </div>
+
+  <div class="phase">
+    <div class="phase-header">
+      <div class="phase-num">4</div>
+      <div class="phase-title">Wire Real Images — HuggingFace Stable Diffusion</div>
+      <span class="badge badge-real">REAL AI</span>
+    </div>
+    <h3>Option A — HuggingFace Inference API (no GPU needed)</h3>
+    <pre>pip install requests</pre>
+    <h3>Replace <code>src/image/image_pipeline.py</code></h3>
+    <pre>import io, os, requests
+
+HF_API_URL = "https://api-inference.huggingface.co/models/stabilityai/stable-diffusion-2"
+HF_TOKEN   = os.getenv("HF_API_TOKEN", "")
+
+def generate_image(prompt: str) -&gt; bytes:
+    headers = {"Authorization": f"Bearer {HF_TOKEN}"}
+    response = requests.post(HF_API_URL, headers=headers, json={"inputs": prompt})
+    response.raise_for_status()
+    return response.content          # raw PNG bytes
+
+def replace_background(image_bytes: bytes, new_background: str) -&gt; bytes:
+    # Future: use inpainting model; for now regenerate with new prompt
+    return generate_image(new_background)
+
+def add_object(image_bytes: bytes, object_description: str) -&gt; bytes:
+    return image_bytes               # placeholder
+
+def apply_filter(image_bytes: bytes, filter_type: str) -&gt; bytes:
+    return image_bytes               # placeholder</pre>
+    <p>Add <code>HF_API_TOKEN=your_token</code> to your <code>.env</code>. Get a free token at <strong>huggingface.co/settings/tokens</strong>.</p>
+  </div>
+
+  <div class="phase">
+    <div class="phase-header">
+      <div class="phase-num">5</div>
+      <div class="phase-title">Wire Real Video — MoviePy (image + audio → MP4)</div>
+      <span class="badge badge-real">REAL AI</span>
+    </div>
+    <pre>pip install moviepy</pre>
+    <h3>Replace <code>src/video/video_pipeline.py</code></h3>
+    <pre>import io, tempfile, os
+from moviepy.editor import ImageClip, AudioFileClip, CompositeVideoClip, TextClip
+
+def generate_video(prompt: str, image_bytes: bytes = b"", audio_bytes: bytes = b"", duration: int = 10) -&gt; bytes:
+    """Compose a video from image + audio bytes."""
+    import tempfile
+
+    with tempfile.NamedTemporaryFile(suffix=".png", delete=False) as img_f:
+        img_f.write(image_bytes or b"")
+        img_path = img_f.name
+
+    with tempfile.NamedTemporaryFile(suffix=".mp3", delete=False) as aud_f:
+        aud_f.write(audio_bytes or b"")
+        aud_path = aud_f.name
+
+    clip = ImageClip(img_path).set_duration(duration)
+    if audio_bytes:
+        audio = AudioFileClip(aud_path)
+        clip = clip.set_audio(audio)
+
+    out_path = tempfile.mktemp(suffix=".mp4")
+    clip.write_videofile(out_path, fps=24, codec="libx264", logger=None)
+
+    with open(out_path, "rb") as f:
+        video_bytes = f.read()
+
+    for p in [img_path, aud_path, out_path]:
+        try: os.remove(p)
+        except: pass
+
+    return video_bytes
+
+def trim_video(video_bytes: bytes, start_time: int, end_time: int) -&gt; bytes:
+    return video_bytes   # implement with moviepy subclip if needed
+
+def overlay_text(video_bytes: bytes, text: str, position="bottom") -&gt; bytes:
+    return video_bytes   # implement with TextClip if needed
+
+def add_transition(video_bytes: bytes, transition_type: str) -&gt; bytes:
+    return video_bytes   # implement with moviepy concatenate_videoclips</pre>
+  </div>
+
+  <div class="phase">
+    <div class="phase-header">
+      <div class="phase-num">6</div>
+      <div class="phase-title">Expose a FastAPI Backend</div>
+      <span class="badge badge-real">REAL AI</span>
+    </div>
+    <p>Replace <code>app.py</code> with a FastAPI server so the Next.js UI can call it.</p>
+    <pre>pip install fastapi uvicorn python-multipart</pre>
+    <h3>New <code>app.py</code></h3>
+    <pre>from fastapi import FastAPI
+from fastapi.middleware.cors import CORSMiddleware
+from pydantic import BaseModel
+from src.orchestration.orchestrator import run_full_pipeline
+from src.utils.file_utils import save_text, save_audio, save_image, save_video
+
+app = FastAPI(title="Multimodal Storytelling API")
+app.add_middleware(CORSMiddleware, allow_origins=["*"], allow_methods=["*"], allow_headers=["*"])
+
+class StoryRequest(BaseModel):
+    idea: str
+
+@app.post("/generate")
+def generate_story(req: StoryRequest):
+    result = run_full_pipeline(req.idea)
+    save_text(result["story_text"])
+    save_audio(result["audio_bytes"])
+    save_image(result["image_bytes"])
+    save_video(result["video_bytes"])
+    return {
+        "story_text": result["story_text"],
+        "image_desc": result["image_desc"],
+        "text_url":  "/outputs/story.txt",
+        "audio_url": "/outputs/story.mp3",
+        "image_url": "/outputs/story.png",
+        "video_url": "/outputs/story.mp4",
+    }
+
+@app.get("/health")
+def health(): return {"status": "ok"}</pre>
+    <p>Run: <code>uvicorn app:app --reload --port 8000</code></p>
+  </div>
+
+  <div class="phase">
+    <div class="phase-header">
+      <div class="phase-num">7</div>
+      <div class="phase-title">Build the Next.js / React Frontend</div>
+      <span class="badge badge-ui">UI</span>
+    </div>
+    <h3>Scaffold</h3>
+    <pre>npx create-next-app@latest frontend --typescript --tailwind --app
+cd frontend</pre>
+    <h3>Key page: <code>frontend/app/page.tsx</code> (outline)</h3>
+    <pre>"use client";
+import { useState } from "react";
+
+export default function Home() {
+  const [idea, setIdea] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [result, setResult] = useState&lt;any&gt;(null);
+
+  async function generate() {
+    setLoading(true);
+    const res = await fetch("http://localhost:8000/generate", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ idea }),
+    });
+    setResult(await res.json());
+    setLoading(false);
+  }
+
+  return (
+    &lt;main className="max-w-2xl mx-auto p-8"&gt;
+      &lt;h1&gt;Multimodal Storyteller&lt;/h1&gt;
+      &lt;textarea value={idea} onChange={e =&gt; setIdea(e.target.value)}
+        placeholder="Enter your story idea..." rows={4} /&gt;
+      &lt;button onClick={generate} disabled={loading}&gt;
+        {loading ? "Generating..." : "Generate Story"}
+      &lt;/button&gt;
+      {result &amp;&amp; (
+        &lt;div&gt;
+          &lt;h2&gt;Story&lt;/h2&gt;&lt;p&gt;{result.story_text}&lt;/p&gt;
+          &lt;img src={result.image_url} alt="generated scene" /&gt;
+          &lt;audio controls src={result.audio_url} /&gt;
+          &lt;video controls src={result.video_url} /&gt;
+        &lt;/div&gt;
+      )}
+    &lt;/main&gt;
+  );
+}</pre>
+    <p>Run: <code>npm run dev</code> — the UI opens at <code>localhost:3000</code>.</p>
+  </div>
+
+  <div class="phase">
+    <div class="phase-header">
+      <div class="phase-num">8</div>
+      <div class="phase-title">Write Tests</div>
+      <span class="badge badge-now">TESTING</span>
+    </div>
+    <pre>pip install pytest pytest-mock</pre>
+    <h3>Create <code>tests/test_text_pipeline.py</code></h3>
+    <pre>from unittest.mock import patch
+
+def test_generate_text_returns_string(monkeypatch):
+    with patch("langchain_ibm.WatsonxLLM.invoke", return_value="Once upon a time..."):
+        from src.text.text_pipeline import generate_text
+        result = generate_text("A dragon who loves baking")
+        assert isinstance(result, str)
+        assert len(result) &gt; 0</pre>
+  </div>
+
+  
+  <h2>4. Target File Tree</h2>
+  <div class="file-tree">
+<span class="exist">multimodal-storytelling-platform/</span><br />
+├── <span class="change">.env</span>                         ← NEW (secrets, gitignored)<br />
+├── <span class="change">app.py</span>                       ← CHANGE to FastAPI server<br />
+├── <span class="change">requirements.txt</span>             ← ADD new deps<br />
+├── <span class="exist">src/</span><br />
+│   ├── <span class="change">config.py</span>               ← ADD IBM creds + model IDs<br />
+│   ├── <span class="change">text/text_pipeline.py</span>   ← REAL: IBM Granite via LangChain<br />
+│   ├── <span class="change">audio/audio_pipeline.py</span> ← REAL: gTTS or IBM TTS<br />
+│   ├── <span class="change">image/image_pipeline.py</span> ← REAL: HuggingFace API<br />
+│   ├── <span class="change">video/video_pipeline.py</span> ← REAL: MoviePy compose<br />
+│   ├── <span class="change">orchestration/orchestrator.py</span> ← REAL: LangChain LCEL<br />
+│   └── <span class="exist">utils/</span> (unchanged)<br />
+├── <span class="new">tests/</span><br />
+│   ├── <span class="new">test_text_pipeline.py</span><br />
+│   ├── <span class="new">test_audio_pipeline.py</span><br />
+│   └── <span class="new">test_orchestrator.py</span><br />
+├── <span class="new">frontend/</span>                      ← NEW: Next.js app<br />
+│   ├── <span class="new">app/page.tsx</span><br />
+│   └── <span class="new">...</span><br />
+└── <span class="exist">outputs/</span> (unchanged)<br />
+  </div>
+
+  
+  <h2>5. Final Dependencies</h2>
+  <table>
+    <tr><th>Package</th><th>Purpose</th><th>Install</th></tr>
+    <tr><td><code>ibm-watsonx-ai</code></td><td>IBM Granite LLM SDK</td><td><code>pip install ibm-watsonx-ai</code></td></tr>
+    <tr><td><code>langchain-ibm</code></td><td>LangChain WatsonxLLM wrapper</td><td><code>pip install langchain-ibm</code></td></tr>
+    <tr><td><code>langchain-core</code></td><td>LCEL chains, prompts, parsers</td><td>auto-installed with langchain-ibm</td></tr>
+    <tr><td><code>gTTS</code></td><td>Free text-to-speech</td><td><code>pip install gTTS</code></td></tr>
+    <tr><td><code>pydub</code></td><td>Audio editing (word ops)</td><td>already in requirements.txt</td></tr>
+    <tr><td><code>moviepy</code></td><td>Video composition</td><td>already in requirements.txt</td></tr>
+    <tr><td><code>requests</code></td><td>HuggingFace image API</td><td>stdlib in most envs</td></tr>
+    <tr><td><code>fastapi + uvicorn</code></td><td>REST API server</td><td><code>pip install fastapi uvicorn</code></td></tr>
+    <tr><td><code>python-dotenv</code></td><td>Load .env credentials</td><td><code>pip install python-dotenv</code></td></tr>
+    <tr><td><code>pytest + pytest-mock</code></td><td>Testing</td><td>already in requirements.txt</td></tr>
+  </table>
+
+  
+  <h2>6. Recommended Build Order</h2>
+  <ol>
+    <li>Get IBM watsonx.ai credentials → add to <code>.env</code></li>
+    <li>Implement Phase 1 (Text/Granite) and verify with <code>python -c "from src.text.text_pipeline import generate_text; print(generate_text('a dragon'))"</code></li>
+    <li>Implement Phase 2 (LangChain orchestrator)</li>
+    <li>Implement Phase 3 (gTTS audio) — quickest real output</li>
+    <li>Implement Phase 4 (HuggingFace images) — get free HF token first</li>
+    <li>Implement Phase 5 (MoviePy video compose) — needs Phase 3 + 4 done</li>
+    <li>Implement Phase 6 (FastAPI) — test with curl/Postman before UI</li>
+    <li>Implement Phase 7 (Next.js UI) — connect to running FastAPI</li>
+    <li>Write tests (Phase 8) — mock external calls with <code>pytest-mock</code></li>
+  </ol>
+
+  <div class="callout ok">
+    <strong>Tip:</strong> You can say <em>"implement Phase N"</em> in this chat and the changes will be applied directly to your files — no copy-paste needed.
+  </div>
+
+  <footer>Made with IBM Bob</footer>
+</div>
+</body>
+</html>

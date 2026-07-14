@@ -1,0 +1,17 @@
+# Core dependencies for multimodal storytelling platform (mock mode)
+
+# Python standard libraries are sufficient for most of the mock logic.
+# These are optional extras for better structure and logging.
+
+# For structured logging (optional, but useful)
+loguru==0.7.2
+
+# For image/audio/video handling when you move beyond mocks
+# (safe to include now, even if not used yet)
+#pillow==10.3.0       # image handling
+pydub==0.25.1        # audio editing
+moviepy==1.0.3       # video editing
+
+# Testing and linting (optional, but recommended)
+pytest==8.2.2
+black==24.4.2
