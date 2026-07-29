@@ -14,6 +14,8 @@ Later, the mock clients can be swapped with real AI SDKs (e.g., IBM Bob, Granite
 - **Orchestration Layer** → Coordinates all pipelines.
 - **Utilities** → File saving (`.txt`, `.mp3`, `.png`, `.mp4`) and logging with timestamps.
 - **Config** → Centralized settings for filenames, voice, tone, transitions.
+- **Frontend**: Next.js App Router with dynamic UI.
+- **Backend**: FastAPI serving `/text`, `/audio`, `/image`, `/video`.
 
 ---
 

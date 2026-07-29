@@ -16,3 +16,14 @@ venv/
 # OS
 .DS_Store
 Thumbs.db
+
+# Generated media files (created at runtime)
+ui/public/audio_*.mp3
+ui/public/image_*.png
+ui/public/video_*.mp4
+
+# Local test scripts
+test_groq.py
+test_media.py
+test_voices.py
+test_voice_detection.py

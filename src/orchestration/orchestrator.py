@@ -15,8 +15,8 @@ from src.video.video_pipeline import generate_video, trim_video, overlay_text, a
 def run_text_pipeline(prompt: str, max_tokens=300):
     return generate_text(prompt, max_tokens)
 
-def run_audio_pipeline(text: str, voice="female_narrator", tone="neutral"):
-    return generate_voice(text, voice, tone)
+def run_audio_pipeline(text: str, voice: str = "female", speed: str = "+0%") -> bytes:
+    return generate_voice(text, voice, speed)
 
 def run_image_pipeline(prompt: str):
     return generate_image(prompt)

@@ -1,17 +1,30 @@
-# Core dependencies for multimodal storytelling platform (mock mode)
+# Core dependencies for multimodal storytelling platform
 
-# Python standard libraries are sufficient for most of the mock logic.
-# These are optional extras for better structure and logging.
+# Web framework
+fastapi>=0.111.0
+uvicorn[standard]>=0.29.0
 
-# For structured logging (optional, but useful)
-loguru==0.7.2
+# Environment / secrets
+python-dotenv>=1.0.1
 
-# For image/audio/video handling when you move beyond mocks
-# (safe to include now, even if not used yet)
-#pillow==10.3.0       # image handling
-pydub==0.25.1        # audio editing
-moviepy==1.0.3       # video editing
+# Text-to-speech (audio pipeline)
+# edge-tts: free, no API key, real male/female voices (Microsoft Edge TTS)
+edge-tts>=6.1.9
+gTTS>=2.5.1  # kept as fallback
 
-# Testing and linting (optional, but recommended)
+# Groq (text pipeline — fast free LLM inference)
+groq>=0.9.0
+
+# IBM watsonx.ai (text pipeline — Granite LLM, fallback)
+ibm-watsonx-ai>=1.1.0
+
+# Hugging Face (image pipeline — Stable Diffusion)
+huggingface-hub>=0.23.0
+
+# Audio / video editing (for future real pipeline work)
+pydub==0.25.1
+moviepy==1.0.3
+
+# Testing and linting
 pytest==8.2.2
 black==24.4.2
