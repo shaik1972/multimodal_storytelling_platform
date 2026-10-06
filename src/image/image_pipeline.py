@@ -1,6 +1,6 @@
 """
 Image pipeline for generation and editing.
-Uses Hugging Face Inference API (Stable Diffusion) when HF_API_KEY is set,
+Uses Hugging Face Inference API (FLUX.1 schnell) when HF_API_KEY is set,
 otherwise falls back to the local mock so the app still runs without credentials.
 """
 
@@ -12,10 +12,10 @@ import os
 _PLACEHOLDER = "your_huggingface_api_key_here"
 
 
-def generate_image(prompt: str) -> bytes:
+def generate_image(prompt: str, allow_fallback: bool = True) -> bytes:
     """
     Generate image bytes from a text description.
-    Falls back to a placeholder PNG when credentials are absent or invalid.
+    Falls back to a placeholder PNG when credentials are absent or invalid unless disabled.
     """
     api_key = os.getenv("HF_API_KEY", "")
 
@@ -23,7 +23,11 @@ def generate_image(prompt: str) -> bytes:
         try:
             return _generate_with_huggingface(prompt, api_key)
         except Exception as exc:
+            if not allow_fallback:
+                raise RuntimeError(f"Hugging Face image generation failed: {exc}") from exc
             print(f"[image_pipeline] HuggingFace error: {exc} — using placeholder")
+    elif not allow_fallback:
+        raise RuntimeError("Set HF_API_KEY to generate video scene illustrations.")
 
     return _mock_png()
 
@@ -34,7 +38,7 @@ def _generate_with_huggingface(prompt: str, api_key: str) -> bytes:
     client = InferenceClient(token=api_key)
     image = client.text_to_image(
         prompt,
-        model="stabilityai/stable-diffusion-2-1",
+        model=os.getenv("HF_IMAGE_MODEL", "black-forest-labs/FLUX.1-schnell"),
     )
     buf = io.BytesIO()
     image.save(buf, format="PNG")

@@ -12,7 +12,12 @@ from src.orchestration.orchestrator import (
     run_image_pipeline,
     run_video_pipeline,
 )
-from src.video.video_pipeline import trim_video, overlay_text, add_transition
+from src.video.video_pipeline import (
+    VideoGenerationError,
+    trim_video,
+    overlay_text,
+    add_transition,
+)
 
 load_dotenv()
 
@@ -111,11 +116,12 @@ async def generate_audio_route(request: Request):
 async def generate_image_route(request: Request):
     data = await request.json()
     prompt = data.get("prompt", "")
-    image_bytes = run_image_pipeline(prompt)
+    story = run_text_pipeline(prompt)
+    image_bytes = run_image_pipeline(story)
 
     filename = f"image_{uuid.uuid4().hex}.png"
     url = _save(image_bytes, filename)
-    return JSONResponse({"imageUrl": url})
+    return JSONResponse({"imageUrl": url, "story": story})
 
 
 # ── Video ─────────────────────────────────────────────────────────────────────
@@ -123,7 +129,10 @@ async def generate_image_route(request: Request):
 async def generate_video_route(request: Request):
     data = await request.json()
     prompt = data.get("prompt", "")
-    video_bytes = run_video_pipeline(prompt)
+    try:
+        video_bytes = run_video_pipeline(prompt)
+    except VideoGenerationError as exc:
+        raise HTTPException(status_code=503, detail=str(exc)) from exc
 
     filename = f"video_{uuid.uuid4().hex}.mp4"
     url = _save(video_bytes, filename)

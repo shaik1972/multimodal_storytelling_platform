@@ -1,76 +1,66 @@
-# Multimodal Storytelling Platform (Mock Mode)
+# Multimodal Storytelling Platform
 
-A modular Python project that orchestrates **text, audio, image, and video pipelines** to create interactive storytelling experiences.  
-Currently runs in **mock mode** (no external SDKs required), making it easy to test orchestration, file saving, and logging locally.  
-Later, the mock clients can be swapped with real AI SDKs (e.g., IBM Bob, Granite, Stable Diffusion, TTS, video editors).
+Turn a text prompt into a short story, narration, and (when configured) an illustration or video. The project has a FastAPI backend and a Next.js interface.
 
----
+## Current capabilities
 
-## 🚀 Features
-- **Text Pipeline** → Generates story text (mocked).
-- **Audio Pipeline** → Narrates text, supports editing (delete/add words with tone).
-- **Image Pipeline** → Creates illustrations, supports editing (replace background, add objects, apply filters).
-- **Video Pipeline** → Generates clips, supports editing (trim, overlay text, add transitions).
-- **Orchestration Layer** → Coordinates all pipelines.
-- **Utilities** → File saving (`.txt`, `.mp3`, `.png`, `.mp4`) and logging with timestamps.
-- **Config** → Centralized settings for filenames, voice, tone, transitions.
-- **Frontend**: Next.js App Router with dynamic UI.
-- **Backend**: FastAPI serving `/text`, `/audio`, `/image`, `/video`.
+- **Prompt to story:** Gemini, Groq, or IBM watsonx.ai can generate stories when configured. With no working text provider, the pipeline returns a clearly marked mock story.
+- **Text to voice:** Microsoft Edge TTS generates narration without a paid API key; gTTS is used as a fallback. Both require internet access.
+- **Illustrations:** Hugging Face image generation is optional and requires a compatible access token/model.
+- **Video:** The pipeline can call a configured local command or a provider implementing its expected HTTP interface. No video model or provider is bundled or configured by default, so real video generation is unavailable until one is supplied. Still-image motion is not presented as generated video.
 
----
+## Requirements
 
-## 📂 Project Structure
+- Python with support for the packages in `requirements.txt`
+- Node.js and npm for the web interface
+- Internet access for hosted text, voice, or image providers
 
-multimodal-storytelling-platform/
-│
-├── src/
-│   ├── text/
-│   │   └── text_pipeline.py
-│   ├── audio/
-│   │   └── audio_pipeline.py
-│   ├── image/
-│   │   └── image_pipeline.py
-│   ├── video/
-│   │   └── video_pipeline.py
-│   ├── orchestration/
-│   │   └── orchestrator.py
-│   ├── utils/
-│   │   ├── file_utils.py
-│   │   ├── logger.py
-│   │   └── config.py
-│
-├── outputs/        # Generated files (story.txt, story.mp3, story.png, story.mp4, run.log)
-├── app.py          # Entry point
-├── requirements.txt
-└── README.md
+## Setup
 
+Create and activate a Python virtual environment, then install the backend dependencies:
 
-## ⚙️ Setup
+```powershell
+py -3.13 -m venv .venv
+.\.venv\Scripts\Activate.ps1
+python -m pip install -r requirements.txt
+Copy-Item .env.example .env
+```
 
-### 1. Clone the repo
-```bash
-git clone https://github.com/yourusername/multimodal-storytelling-platform.git
-cd multimodal-storytelling-platform
+Add credentials for the providers you intend to use to `.env`. Never commit `.env`; `.env.example` contains placeholders only. Without a text-provider key, story generation uses mock mode.
 
-### 2. Install dependencies
-pip install -r requirements.txt
-Note: Pillow is excluded because it doesn’t yet support Python 3.13.
-For full image editing support, use Python 3.12 and re‑add Pillow.
+Install the frontend dependencies:
 
-## Usage
-python app.py
-Logs are written to: outputs/run.log
+```powershell
+npm ci --prefix ui
+```
 
-🛠️ Next Steps
-Swap MockBobClient with real SDKs (IBM Bob, Granite, Stable Diffusion, etc.).
+## Run
 
-Enable Pillow once Python 3.13 wheels are available (or use Python 3.12).
+Start the backend and frontend in separate terminals:
 
-Extend pipelines with real audio/image/video editing logic.
+```powershell
+\.venv\Scripts\python.exe -m uvicorn backend:app --reload --port 8000
+```
 
-Add CLI or web interface for interactive storytelling.
+```powershell
+npm --prefix ui run dev
+```
 
-📜 License
+Open `http://localhost:3000`. The backend API is available at `http://localhost:8000`.
 
----
+The command-line demo can also be run with:
+
+```powershell
+\.venv\Scripts\python.exe app.py
+```
+
+## Tests
+
+```powershell
+\.venv\Scripts\python.exe -m pytest tests/test_video_pipeline.py -q
+```
+
+## Video provider contract
+
+For a local engine, set `TEXT_VIDEO_LOCAL_COMMAND` to a command that accepts `{prompt}` and `{out}` placeholders and writes a real MP4 to the output path. A hosted provider uses `TEXT_VIDEO_API_KEY`, `TEXT_VIDEO_API_URL`, and optionally `TEXT_VIDEO_MODEL`; its API must accept `POST {TEXT_VIDEO_API_URL}/text-to-video` with a JSON body containing `model` and `prompt`, and return MP4 bytes or a JSON `video_url`. Provider APIs that differ need an adapter.
 

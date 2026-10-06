@@ -163,6 +163,12 @@ export default function Home() {
             <option value="video">🎬 Narrated video</option>
           </select>
 
+          {format === "video" && (
+            <p className="-mt-2 mb-4 rounded-lg border border-amber-300 bg-amber-50 p-3 text-sm text-amber-900">
+              Video generation is still in progress. It requires a configured text-to-video provider and may not be available yet.
+            </p>
+          )}
+
           {/* ── Voice & speed controls (audio only) ─────────────────────── */}
           {(format === "audio" || format === "video") && (
             <div className="mb-4 p-3 border rounded-lg bg-gray-50 space-y-3">
@@ -350,7 +356,7 @@ export default function Home() {
               <span>Generating your {format}…</span>
               {format === "video" && (
                 <span className="text-xs text-center max-w-xs">
-                  Video generation takes 30–60 s — building story, narration &amp; image first…
+                  Submitting the video request. Generation may take several minutes, depending on the configured provider…
                 </span>
               )}
             </div>

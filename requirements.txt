@@ -15,11 +15,15 @@ gTTS>=2.5.1  # kept as fallback
 # Groq (text pipeline — fast free LLM inference)
 groq>=0.9.0
 
+# Google Gemini (text pipeline — free tier)
+google-genai>=1.0.0
+
 # IBM watsonx.ai (text pipeline — Granite LLM, fallback)
 ibm-watsonx-ai>=1.1.0
 
 # Hugging Face (image pipeline — Stable Diffusion)
-huggingface-hub>=0.23.0
+huggingface-hub>=1.0.0
+requests>=2.31.0
 
 # Audio / video editing (for future real pipeline work)
 pydub==0.25.1

@@ -13,6 +13,11 @@ __pycache__/
 env/
 venv/
 
+# Local-only tooling and temporary media
+/comfyui/
+.vscode/settings.json
+/outTEMP_MPY_wvf_snd.mp4
+
 # OS
 .DS_Store
 Thumbs.db

@@ -12,6 +12,7 @@ Falls back to gTTS if edge-tts is unavailable.
 """
 
 import asyncio
+from concurrent.futures import ThreadPoolExecutor
 import io
 import tempfile
 import os
@@ -42,7 +43,15 @@ def generate_voice(text: str, voice: str = DEFAULT_VOICE, speed: str = "+0%") ->
     speed : edge-tts rate string, e.g. "+0%", "+20%", "-20%"
     """
     try:
-        return asyncio.run(_edge_tts(text, voice, speed))
+        try:
+            asyncio.get_running_loop()
+        except RuntimeError:
+            return asyncio.run(_edge_tts(text, voice, speed))
+
+        with ThreadPoolExecutor(max_workers=1) as executor:
+            return executor.submit(
+                asyncio.run, _edge_tts(text, voice, speed)
+            ).result()
     except Exception as exc:
         print(f"[audio_pipeline] edge-tts error: {exc} — falling back to gTTS")
         return _gtts_fallback(text)
